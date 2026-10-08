@@ -6,6 +6,12 @@
 //   tompion [--out <path>] read <calendar> [<from> <to>]  events in one calendar, as JSON
 //   tompion [--out <path>] create <spec.json>             makes the events a spec lists
 //   tompion [--out <path>] delete <spec.json>             deletes the events a spec lists
+//   tompion -h | --help                                   this usage and where the README is
+//   tompion --version                                     "tompion" and the version
+//
+// -h, --help and --version must come alone. They print plain text to stdout and
+// exit 0 before --out, the command or the calendar is looked at, so they work
+// run directly from a shell.
 //
 // Exit codes: 0 done. 1 failed, with the reason on stderr (or in <path>.err).
 // 2 a bad --out path, or the answer could not be written (to <path> or stdout);
@@ -51,6 +57,10 @@
 // Build: see build.sh beside this file.
 import EventKit
 import Foundation
+
+// The one place the version is kept. CFBundleShortVersionString in Info.plist must
+// match it; build.sh refuses to build if it does not.
+let version = "1.0.0"
 
 let usage = "usage: tompion [--out <path>] calendars | read <calendar> [<from> <to>] | create <spec.json> | delete <spec.json>"
 
@@ -401,6 +411,21 @@ func stopIfCallerGone(_ store: EKEventStore) {
 // MARK: - Main
 
 var args = Array(CommandLine.arguments.dropFirst())
+
+// -h, --help and --version are answered at once, before --out, the command or the
+// calendar, so they never bring up the permission dialog.
+if let flag = args.first, ["-h", "--help", "--version"].contains(flag) {
+    guard args.count == 1 else { fail("\(flag) takes nothing after it; " + usage) }
+    let text = flag == "--version"
+        ? "tompion \(version)"
+        : usage + "\nThe commands, their JSON and why to run it through open: README.md, or https://github.com/tompopham/Tompion"
+    guard writeAll(1, Data((text + "\n").utf8)) else {
+        toStderr("tompion: could not write to stdout: \(errnoText())")
+        exit(2)
+    }
+    exit(0)
+}
+
 if args.first == "--out" {
     guard args.count >= 2 else {
         toStderr("tompion: --out needs a path\n" + usage)

@@ -14,7 +14,8 @@
 # calendar access for it, instead of refusing silently on behalf of whatever
 # started it. It is compiled for macOS 14 or later, whatever this Mac runs, and
 # built in a temporary folder first, so a failed build leaves any existing app
-# as it was.
+# as it was. It refuses to build if the version in tompion.swift and
+# CFBundleShortVersionString in Info.plist differ.
 #
 # Build outside iCloud Drive (so not in a synced Desktop or Documents folder):
 # iCloud's file attributes break code signing. If your checkout is in one, pass
@@ -31,6 +32,15 @@ case "$ID" in
 esac
 if [ -z "$TOMPION_BUNDLE_ID" ]; then
 	echo "warning: TOMPION_BUNDLE_ID is not set, so the app gets the placeholder $ID" >&2
+fi
+
+# The version is kept in tompion.swift (for --version) and in Info.plist (for
+# macOS); refuse to build if the two differ.
+SWIFT_VERSION="$(sed -n 's/^let version = "\(.*\)"$/\1/p' "$SRC/tompion.swift")"
+PLIST_VERSION="$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$SRC/Info.plist" 2>/dev/null || true)"
+if [ -z "$SWIFT_VERSION" ] || [ "$SWIFT_VERSION" != "$PLIST_VERSION" ]; then
+	echo "the version in tompion.swift (\"$SWIFT_VERSION\") and CFBundleShortVersionString in Info.plist (\"$PLIST_VERSION\") must be the same" >&2
+	exit 1
 fi
 
 TMP="$(mktemp -d "${TMPDIR:-/tmp}/tompion-build.XXXXXX")"

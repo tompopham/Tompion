@@ -96,7 +96,7 @@ Remove the run's folder, as `wait_for_answer` and the Python helper below do. Ju
 
 ## Commands
 
-Every command prints JSON. Its arguments go after `--args --out <path>`. The examples use `wait_for_answer` from above.
+Every command prints JSON. Its arguments go after `--args --out <path>`. The examples use `wait_for_answer` from above. `--help` and `--version`, at the end of this section, are the exceptions.
 
 ### `calendars`
 
@@ -179,6 +179,15 @@ The ids come from `read` or `create`. `calendar` must be a non-empty string and 
 - `error: <reason>`: EventKit would not delete it.
 
 If the commit fails, Tompion fails with `commit failed: <reason>. Check with read what was deleted.`
+
+### `--help` and `--version`
+
+```sh
+build/Tompion.app/Contents/MacOS/tompion --help
+build/Tompion.app/Contents/MacOS/tompion --version
+```
+
+`--help` (or `-h`) prints the usage line and where to find this README. `--version` prints `tompion` and the version, for example `tompion 1.0.0`. Unlike the four commands, they print plain text to stdout, not JSON, and exit with code 0. Tompion answers them before it looks at anything else, so they never ask for calendar access, and they are the one thing to run directly from a shell rather than through `open`. Each must come alone: no `--out` and nothing after it.
 
 ## Calling it from Python
 
