@@ -46,18 +46,19 @@ wait_for_answer() {
     sleep 0.1
     i=$((i + 1))
   done
-  if [ -e "$d/answer.json" ]; then cat "$d/answer.json"; echo
-  elif [ -e "$d/answer.json.err" ]; then cat "$d/answer.json.err"
-  else echo "no answer from Tompion in two minutes"
+  if [ -e "$d/answer.json" ]; then cat "$d/answer.json"; echo; rc=0
+  elif [ -e "$d/answer.json.err" ]; then cat "$d/answer.json.err" >&2; rc=1
+  else echo "no answer from Tompion in two minutes" >&2; rc=1
   fi
   rm -r "$d"
+  return "$rc"
 }
 
 d=$(mktemp -d)
 open -n build/Tompion.app --args --out "$d/answer.json" calendars; wait_for_answer $?
 ```
 
-`mktemp -d` makes a new folder that only you can read, for this one run. Every example below follows the same steps: a new folder, `open`, then `wait_for_answer $?`, which you define once in each Terminal window. The `$?` hands it `open`'s result, so if `open` fails (the app is not at that path, say) it removes the folder and returns at once, after `open`'s own message, instead of waiting two minutes for nothing.
+`mktemp -d` makes a new folder that only you can read, for this one run. Every example below follows the same steps: a new folder, `open`, then `wait_for_answer $?`, which you define once in each Terminal window. The `$?` hands it `open`'s result, so if `open` fails (the app is not at that path, say) it removes the folder and returns at once, after `open`'s own message, instead of waiting two minutes for nothing. It returns 0 when the answer came, printed on stdout, and non-zero on any failure: `open` failing, an error from Tompion, or no answer in two minutes. Tompion's error and the two-minute message go to stderr, so only an answer reaches stdout, and the folder is removed every time. A script can test it with `if` or `&&`.
 
 The first time, macOS shows its usual dialog asking whether Tompion may access your calendars. Allow it. If you refused by mistake, switch it on in System Settings > Privacy & Security > Calendars. Tompion waits at most 100 seconds for an answer to the dialog; after that it fails with "timed out waiting for calendar access", and you answer the dialog, or allow it in System Settings, and run it again. That is why callers here wait two minutes.
 
