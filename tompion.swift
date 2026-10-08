@@ -418,7 +418,7 @@ if let flag = args.first, ["-h", "--help", "--version"].contains(flag) {
     guard args.count == 1 else { fail("\(flag) takes nothing after it; " + usage) }
     let text = flag == "--version"
         ? "tompion \(version)"
-        : usage + "\nThe commands, their JSON and why to run it through open: README.md, or https://github.com/tompopham/Tompion"
+        : usage + "\n       tompion --help | -h | --version\nThe commands, their JSON and why to run it through open: README.md, or https://github.com/tompopham/Tompion"
     guard writeAll(1, Data((text + "\n").utf8)) else {
         toStderr("tompion: could not write to stdout: \(errnoText())")
         exit(2)
