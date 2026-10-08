@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleExecutable</key>
+	<string>tompion</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.example.tompion</string>
+	<key>CFBundleName</key>
+	<string>Tompion</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>LSUIElement</key>
+	<true/>
+	<key>NSCalendarsFullAccessUsageDescription</key>
+	<string>Tompion reads, creates and deletes calendar events when you run it.</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Tompion reads, creates and deletes calendar events when you run it.</string>
+</dict>
+</plist>

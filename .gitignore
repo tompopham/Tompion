@@ -1,0 +1,7 @@
+# Build output
+build/
+Tompion.app
+
+# macOS and Python
+.DS_Store
+__pycache__/
